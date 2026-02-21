@@ -1,0 +1,93 @@
+# Implementation Plan: Full-Stack Todo Application with Next.js and FastAPI
+
+**Branch**: `main` | **Date**: 2026-02-22 | **Spec**: speckit.specify
+**Input**: Feature specification from `speckit.specify`
+
+## Summary
+
+A full-stack Todo application featuring a Next.js 16+ frontend with App Router and JWT authentication via Better Auth, a Python FastAPI and SQLModel backend, and persistent data storage in a Neon Serverless PostgreSQL database. This application will provide a secure and interactive web interface for authenticated users to manage their personal todo tasks, including adding, viewing, updating, marking as complete, and deleting tasks.
+
+## Technical Context
+
+**Language/Version**:
+-   Frontend: TypeScript (Next.js 16+, React 18+)
+-   Backend: Python 3.11+
+**Primary Dependencies**:
+-   Frontend: Next.js (with App Router), React, Better Auth (for JWT authentication), Tailwind CSS (for styling, assuming based on common practice for Next.js)
+-   Backend: FastAPI, SQLModel, Pydantic, SQLAlchemy, psycopg2-binary (or equivalent for PostgreSQL), python-jose (for JWT), uvicorn (ASGI server)
+**Storage**: Neon Serverless PostgreSQL
+**Testing**:
+-   Frontend: Jest, React Testing Library, Playwright (for E2E)
+-   Backend: pytest, httpx (for API testing)
+**Target Platform**:
+-   Frontend: Modern Web Browsers
+-   Backend: Linux/Container (e.g., Docker, Serverless functions)
+**Project Type**: Full-Stack Web Application (Monorepo structure)
+**Performance Goals**:
+-   Frontend: Web application loads and becomes interactive (TTI) within 3 seconds on a typical broadband connection (SC-004).
+-   Backend: All API endpoints respond within 200ms for 95% of requests under normal load (SC-003).
+-   Authentication (login/logout) completes within 1 second for 95% of requests (SC-002).
+**Constraints**:
+-   Data must be persisted in the Neon Serverless PostgreSQL database.
+-   Authentication must use JWT via Better Auth on the frontend.
+-   Users can only access/modify their own tasks.
+-   Scalability for multiple concurrent users.
+**Scale/Scope**: Multi-user, personal todo list management. Supports up to thousands of users with efficient task retrieval and modification.
+
+## Constitution Check
+
+-   **Modularity**: Components should be loosely coupled and manageable.
+    -   *Evaluation*: The new plan strongly supports modularity by separating frontend and backend into distinct projects within a monorepo, and by defining clear API contracts.
+-   **Testability**: Code should be easily testable with automated tests.
+    -   *Evaluation*: Dedicated testing frameworks for both frontend (Jest, React Testing Library, Playwright) and backend (pytest, httpx) ensure comprehensive testability.
+-   **Simplicity**: Prefer the simplest solution that meets the requirements.
+    -   *Evaluation*: While more complex than the console app, the chosen stack (Next.js, FastAPI, SQLModel) represents a robust yet relatively straightforward solution for modern full-stack web development, balancing simplicity with scalability and maintainability.
+-   **Readability**: Code should be clear, concise, and follow best practices.
+    -   *Evaluation*: Adherence to TypeScript and Python type hinting, along with established framework conventions (Next.js App Router, FastAPI/SQLModel), will promote readability.
+
+## Project Structure
+
+### Documentation (this feature)
+
+```text
+speckit.specify      # Feature specification
+speckit.plan         # This file
+```
+
+### Source Code (repository root)
+
+```text
+.
+├── frontend/
+│   ├── app/                    # Next.js App Router root
+│   ├── components/             # Reusable React components
+│   ├── lib/                    # Client-side utility functions, Better Auth configuration
+│   ├── public/                 # Static assets
+│   ├── styles/                 # Tailwind CSS configuration
+│   └── package.json            # Frontend dependencies
+├── backend/
+│   ├── app/                    # FastAPI application root
+│   │   ├── api/                # API routers (tasks, auth)
+│   │   ├── core/               # Configuration, database setup, JWT utilities
+│   │   ├── models/             # SQLModel models (User, Task)
+│   │   └── main.py             # FastAPI application entry point
+│   ├── tests/                  # Backend tests (pytest)
+│   └── requirements.txt        # Backend dependencies
+├── tests/ (e.g. E2E tests for Playwright)
+├── .env.example                # Environment variables example
+├── .gitignore
+├── README.md
+└── pyproject.toml              # (Optional) For monorepo tooling if Poetry is used for backend
+```
+
+**Structure Decision**: The monorepo structure with `frontend/` and `backend/` directories is chosen to clearly separate concerns and allow independent development and deployment of each part of the full-stack application, while maintaining them within a single repository for easier management. This aligns with the complexity and requirements of a modern full-stack web application.
+
+## Complexity Tracking
+
+The transition from an in-memory console application to a full-stack web application inherently introduces significant complexity. Key areas of increased complexity include:
+1.  **Distributed System**: Two main components (frontend and backend) interacting over a network.
+2.  **Authentication/Authorization**: Implementing secure JWT-based authentication and ensuring proper authorization for user-specific tasks.
+3.  **Database Integration**: Setting up and managing a PostgreSQL database with an ORM (SQLModel).
+4.  **Deployment**: Separate deployment pipelines for frontend and backend.
+
+These complexities are justified by the new requirements for data persistence, multi-user support, and a rich web user interface. The chosen frameworks (Next.js, FastAPI, SQLModel) are designed to manage such complexities efficiently.

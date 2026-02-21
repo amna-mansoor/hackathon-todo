@@ -1,0 +1,26 @@
+# [Task]: T005, T006
+# [From]: speckit.plan / Phase 1: Setup
+# [Spec]: speckit.specify
+
+[tool.poetry]
+name = "in-memory-todo-app"
+version = "0.1.0"
+description = "An in-memory Python console Todo application"
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "--strict-markers --import-mode=importlib"
+testpaths = [
+    "tests",
+]

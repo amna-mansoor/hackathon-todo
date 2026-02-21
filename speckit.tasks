@@ -1,0 +1,229 @@
+# Tasks: Full-Stack Todo Application with Next.js and FastAPI
+
+**Input**: Design documents from `speckit.plan`, `spec-kit/specs/`
+**Prerequisites**: `speckit.plan`, `speckit.specify`, `spec-kit/specs/features/task-crud.md`, `spec-kit/specs/features/authentication.md`, `spec-kit/specs/api/rest-endpoints.md`, `spec-kit/specs/database/schema.md`
+
+**Tests**: This task list includes test tasks following a Test-Driven Development (TDD) approach where applicable.
+
+**Organization**: Tasks are grouped by logical components and user stories to enable independent implementation and testing.
+
+## Format: `[ID] [P?] [Story] Description`
+
+-   **[P]**: Can run in parallel (different files, no dependencies)
+-   **[Story]**: Which user story this task belongs to (e.g., US1: Auth, US2: Add Task, US3: View Tasks, US4: Mark Complete, US5: Update Task, US6: Delete Task)
+-   Include exact file paths in descriptions where relevant.
+
+## Path Conventions
+
+-   `frontend/`: Next.js application
+-   `backend/`: FastAPI application
+
+---
+
+## Phase 1: Project Setup & Monorepo Configuration
+
+**Purpose**: Initialize the monorepo structure, frontend (Next.js) and backend (FastAPI) projects, and basic configuration.
+
+-   [ ] T001 Create `frontend/` directory in repository root
+-   [ ] T002 Create `backend/` directory in repository root
+-   [ ] T003 [P] Initialize Next.js project in `frontend/` (e.g., `npx create-next-app@latest frontend --ts --app --tailwind --eslint`)
+-   [ ] T004 [P] Initialize Python virtual environment and FastAPI project in `backend/`
+-   [ ] T005 [P] Create `frontend/package.json` with initial dependencies (Better Auth, etc.)
+-   [ ] T006 [P] Create `backend/requirements.txt` with initial dependencies (FastAPI, SQLModel, uvicorn, python-jose, psycopg2-binary, passlib, bcrypt, httpx, pytest)
+-   [ ] T007 [P] Create `.env.example` for environment variables (DB URL, JWT Secret, etc.)
+-   [ ] T008 [P] Configure `.gitignore` to include `node_modules`, `.next`, `.venv`, `.env` entries
+-   [ ] T009 Create `backend/app/__init__.py` and `backend/app/main.py`
+-   [ ] T010 Create `backend/tests/__init__.py` and `backend/tests/test_main.py`
+-   [ ] T011 [P] Configure `pytest` for `backend/`
+-   [ ] T012 [P] Create `frontend/lib/auth.ts` for Better Auth configuration (placeholder)
+
+---
+
+## Phase 2: Database and ORM Setup (Backend)
+
+**Purpose**: Define the database schema using SQLModel and configure the database connection.
+
+-   [ ] T013 Create `backend/app/core/config.py` for environment variable loading (e.g., `DATABASE_URL`, `SECRET_KEY`)
+-   [ ] T014 Create `backend/app/core/db.py` for database engine and session management (SQLModel)
+-   [ ] T015 [US1, US2, US3, US4, US5, US6] Create `backend/app/models/user.py` for the `User` SQLModel schema (including `id`, `email`, `password_hash`, `created_at`, `updated_at`, relationships) (Source: `spec-kit/specs/database/schema.md`)
+-   [ ] T016 [US2, US3, US4, US5, US6] Create `backend/app/models/task.py` for the `Task` SQLModel schema (including `id`, `user_id`, `description`, `status`, `created_at`, `updated_at`, relationships) (Source: `spec-kit/specs/database/schema.md`)
+-   [ ] T017 [P] [US1, US2, US3, US4, US5, US6] Implement initial database migration script (e.g., using Alembic if integrated, or simple `create_db_and_tables` in `backend/app/main.py`)
+-   [ ] T018 Write failing test for database connection in `backend/tests/test_db.py`
+-   [ ] T019 Implement database connection test to pass T018
+
+---
+
+## Phase 3: Backend Authentication (FastAPI)
+
+**Purpose**: Implement user registration, login, JWT token handling, and authentication middleware.
+
+-   [ ] T020 [US1] Create `backend/app/api/deps.py` for FastAPI dependency injection (e.g., `get_db`, `get_current_user`)
+-   [ ] T021 [US1] Create `backend/app/schemas/user.py` for Pydantic models for user request/response (e.g., `UserCreate`, `UserRead`, `Token`)
+-   [ ] T022 [US1] Create `backend/app/core/security.py` for password hashing (bcrypt) and JWT token creation/validation (python-jose)
+-   [ ] T023 [US1] Write failing tests for password hashing/verification in `backend/tests/test_security.py`
+-   [ ] T024 [US1] Implement password hashing/verification to pass T023
+-   [ ] T025 [US1] Write failing tests for JWT token creation/decoding in `backend/tests/test_security.py`
+-   [ ] T026 [US1] Implement JWT token creation/decoding to pass T025
+-   [ ] T027 [US1] Create `backend/app/api/routes/auth.py` for authentication endpoints (register, login)
+-   [ ] T028 [US1] Write failing tests for user registration (`POST /auth/register`) in `backend/tests/api/test_auth.py`
+-   [ ] T029 [US1] Implement user registration endpoint in `backend/app/api/routes/auth.py` to pass T028
+-   [ ] T030 [US1] Write failing tests for user login (`POST /auth/login`) in `backend/tests/api/test_auth.py`
+-   [ ] T031 [US1] Implement user login endpoint in `backend/app/api/routes/auth.py` to pass T030
+-   [ ] T032 [US1] Implement `get_current_user` dependency in `backend/app/api/deps.py` to extract user from JWT
+-   [ ] T033 [US1] Integrate authentication router into `backend/app/main.py`
+-   [ ] T034 [P] [US1] Write failing tests for authentication middleware/protected route access in `backend/tests/api/test_auth.py`
+-   [ ] T035 [P] [US1] Implement authentication middleware and integrate into FastAPI `backend/app/main.py`
+
+---
+
+## Phase 4: Backend Task Management API (FastAPI)
+
+**Purpose**: Implement the RESTful API endpoints for CRUD operations on user tasks, including authorization.
+
+-   [ ] T036 [US2, US3, US4, US5, US6] Create `backend/app/schemas/task.py` for Pydantic models for task request/response (e.g., `TaskCreate`, `TaskRead`, `TaskUpdate`)
+-   [ ] T037 [US2, US3, US4, US5, US6] Create `backend/app/api/routes/tasks.py` for task management endpoints (`GET`, `POST`, `PUT`, `DELETE`, `PATCH /api/{user_id}/tasks`) (Source: `spec-kit/specs/api/rest-endpoints.md`)
+-   [ ] T038 [P] [US3] Write failing test for `GET /api/{user_id}/tasks` (retrieve all tasks for user) in `backend/tests/api/test_tasks.py`
+-   [ ] T039 [P] [US3] Implement `GET /api/{user_id}/tasks` endpoint to pass T038, including authorization check for `user_id` in path.
+-   [ ] T040 [P] [US2] Write failing test for `POST /api/{user_id}/tasks` (create task) in `backend/tests/api/test_tasks.py`
+-   [ ] T041 [P] [US2] Implement `POST /api/{user_id}/tasks` endpoint to pass T040, including authorization.
+-   [ ] T042 [P] [US5] Write failing test for `DELETE /api/{user_id}/tasks/{task_id}` (delete task) in `backend/tests/api/test_tasks.py`
+-   [ ] T043 [P] [US5] Implement `DELETE /api/{user_id}/tasks/{task_id}` endpoint to pass T042, including authorization.
+-   [ ] T044 [P] [US4] Write failing test for `PUT /api/{user_id}/tasks/{task_id}` (full update) in `backend/tests/api/test_tasks.py`
+-   [ ] T045 [P] [US4] Implement `PUT /api/{user_id}/tasks/{task_id}` endpoint to pass T044, including authorization.
+-   [ ] T046 [P] [US4] Write failing test for `PATCH /api/{user_id}/tasks/{task_id}` (partial update) in `backend/tests/api/test_tasks.py`
+-   [ ] T047 [P] [US4] Implement `PATCH /api/{user_id}/tasks/{task_id}` endpoint to pass T046, including authorization.
+-   [ ] T048 [P] [US3] Write failing test for `GET /api/{user_id}/tasks/{task_id}` (retrieve single task) in `backend/tests/api/test_tasks.py`
+-   [ ] T049 [P] [US3] Implement `GET /api/{user_id}/tasks/{task_id}` endpoint to pass T048, including authorization.
+-   [ ] T050 Integrate tasks router into `backend/app/main.py`
+-   [ ] T051 Ensure all backend tests (`backend/tests/`) pass.
+
+---
+
+## Phase 5: Frontend Core Setup (Next.js)
+
+**Purpose**: Set up the Next.js project with App Router, Tailwind CSS, and Better Auth.
+
+-   [ ] T052 Configure `frontend/tailwind.config.ts` (if not done by `create-next-app`)
+-   [ ] T053 Create `frontend/app/layout.tsx` for global layout and `Better Auth` provider setup
+-   [ ] T054 Configure `frontend/lib/auth.ts` for `Better Auth` (provider, callbacks, session management)
+-   [ ] T055 [P] Create `frontend/app/api/auth/[...nextauth]/route.ts` for `Better Auth` API routes
+
+---
+
+## Phase 6: Frontend Authentication UI (Next.js)
+
+**Purpose**: Develop user-facing login, registration, and logout components and pages.
+
+-   [ ] T056 [US1] Create `frontend/app/login/page.tsx` for user login form.
+-   [ ] T057 [US1] Implement login functionality in `frontend/app/login/page.tsx` using `Better Auth`.
+-   [ ] T058 [US1] Create `frontend/app/register/page.tsx` for user registration form.
+-   [ ] T059 [US1] Implement registration functionality in `frontend/app/register/page.tsx` to interact with backend `/auth/register` endpoint.
+-   [ ] T060 [US1] Implement logout functionality (e.g., a logout button/link) using `Better Auth`.
+-   [ ] T061 [US1] Implement route protection (e.g., redirecting unauthenticated users from protected routes to login).
+-   [ ] T062 [US1] Implement display of authentication errors/success messages in the UI.
+-   [ ] T063 [P] Write frontend integration tests for login/logout flow using `Jest` and `React Testing Library`.
+-   [ ] T064 [P] Write frontend integration tests for registration flow.
+
+---
+
+## Phase 7: Frontend Task Management UI (Next.js)
+
+**Purpose**: Build the UI for interacting with the backend task API.
+
+-   [ ] T065 [US2, US3, US4, US5, US6] Create `frontend/app/dashboard/page.tsx` as the main task list view (protected route).
+-   [ ] T066 [US3] Implement fetching and displaying user-specific tasks from backend API (`GET /api/{user_id}/tasks`) in `frontend/app/dashboard/page.tsx`.
+-   [ ] T067 [US2] Implement form/input for adding new tasks (`POST /api/{user_id}/tasks`) in `frontend/app/dashboard/page.tsx`.
+-   [ ] T068 [US4] Implement UI element (e.g., checkbox) and logic to mark tasks as complete (`PATCH /api/{user_id}/tasks/{task_id}`).
+-   [ ] T069 [US5] Implement UI for updating task description (e.g., inline edit or modal) and logic (`PUT`/`PATCH /api/{user_id}/tasks/{task_id}`).
+-   [ ] T070 [US6] Implement UI element (e.g., delete button) and logic to delete tasks (`DELETE /api/{user_id}/tasks/{task_id}`).
+-   [ ] T071 Implement client-side error handling and display for API interactions.
+-   [ ] T072 [P] Write frontend integration tests for task CRUD operations in `frontend/tests/task.test.tsx`.
+
+---
+
+## Phase 8: Polish, Testing & Deployment
+
+**Purpose**: Cross-cutting concerns, comprehensive testing, and preparation for deployment.
+
+-   [ ] T073 [P] Implement Dockerfiles for `frontend/` and `backend/` for containerization.
+-   [ ] T074 [P] Write E2E tests using Playwright for critical user journeys (login, add task, view task, logout).
+-   [ ] T075 Configure CI/CD pipelines (e.g., GitHub Actions) for linting, testing, and building both frontend and backend.
+-   [ ] T076 Review `frontend/` and `backend/` codebases for adherence to best practices, style guides, and readability.
+-   [ ] T077 Finalize `README.md` with setup instructions, deployment guide, and usage.
+-   [ ] T078 [P] Set up Neon Serverless PostgreSQL database instance and retrieve connection string.
+-   [ ] T079 [P] Update `.env.example` with all necessary environment variables.
+
+---
+
+## Dependencies & Execution Order
+
+### Phase Dependencies
+
+-   **Phase 1 (Setup)**: No dependencies - can start immediately.
+-   **Phase 2 (Database/ORM)**: Depends on Phase 1 completion.
+-   **Phase 3 (Backend Auth)**: Depends on Phase 2 (User model).
+-   **Phase 4 (Backend Task API)**: Depends on Phase 2 (Task model) and Phase 3 (Auth middleware).
+-   **Phase 5 (Frontend Core)**: Depends on Phase 1 completion.
+-   **Phase 6 (Frontend Auth UI)**: Depends on Phase 5 and Phase 3 (Backend Auth endpoints).
+-   **Phase 7 (Frontend Task UI)**: Depends on Phase 5 and Phase 4 (Backend Task API endpoints).
+-   **Phase 8 (Polish/Deployment)**: Depends on all prior phases being substantially complete.
+
+### User Story Dependencies (within phases)
+
+-   US1 (Auth): Core to Phases 3 and 6.
+-   US2 (Add Task): Backend in Phase 4, Frontend in Phase 7.
+-   US3 (View Tasks): Backend in Phase 4, Frontend in Phase 7.
+-   US4 (Update Task): Backend in Phase 4, Frontend in Phase 7.
+-   US5 (Delete Task): Backend in Phase 4, Frontend in Phase 7.
+-   US6 (Mark Complete): Backend in Phase 4, Frontend in Phase 7.
+
+### Within Each Phase
+
+-   Tests MUST be written and FAIL before corresponding implementation.
+-   Models/Schemas before API routes.
+-   Core logic before UI integration.
+
+### Parallel Opportunities
+
+-   Tasks marked with [P] can run in parallel.
+-   Frontend and Backend development (Phases 3/4 vs. Phases 5/6/7) can largely happen in parallel once foundational models and API contracts are clear.
+-   Within frontend/backend, multiple developers can work on different user stories or components in parallel after core setup.
+
+---
+
+## Implementation Strategy
+
+### Incremental Delivery (Recommended)
+
+1.  Complete **Phase 1 (Setup)**.
+2.  Complete **Phase 2 (Database/ORM)**.
+3.  Complete **Phase 3 (Backend Authentication)**.
+4.  Complete **Phase 4 (Backend Task Management API)**.
+    -   At this point, the entire backend API (Auth + Tasks) should be functional and testable via API clients (e.g., Postman, Insomnia).
+5.  Complete **Phase 5 (Frontend Core Setup)**.
+6.  Complete **Phase 6 (Frontend Authentication UI)**.
+    -   Users should be able to register, log in, and log out from the frontend.
+7.  Complete **Phase 7 (Frontend Task Management UI)**.
+    -   The full web application should be functional, allowing users to manage tasks.
+8.  Complete **Phase 8 (Polish, Testing & Deployment)**.
+
+### Parallel Team Strategy
+
+With multiple developers:
+
+1.  Team completes **Phase 1 (Setup)** and **Phase 2 (Database/ORM)** together.
+2.  Once foundational backend is ready:
+    -   **Backend Developer(s)**: Work on **Phase 3 (Backend Auth)** and **Phase 4 (Backend Task API)**.
+    -   **Frontend Developer(s)**: Work on **Phase 5 (Frontend Core Setup)**, **Phase 6 (Frontend Auth UI)**, and **Phase 7 (Frontend Task Management UI)**, mock API responses initially or integrate with the backend as endpoints become available.
+3.  Collaborate on **Phase 8 (Polish, Testing & Deployment)**.
+
+---
+
+## Notes
+
+-   [P] tasks = different files, no immediate dependencies.
+-   [Story] label maps task to specific user story for traceability.
+-   Each user story should be independently completable and testable where possible.
+-   Verify tests fail before implementing.
+-   Commit after each task or logical group.
+-   Leverage existing documentation in `spec-kit/specs/` for detailed requirements.

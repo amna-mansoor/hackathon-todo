@@ -1,0 +1,160 @@
+# Feature Specification: Full-Stack Todo Application with Next.js and FastAPI
+
+**Feature Branch**: `[GENERATED_BRANCH_NAME]`
+**Created**: 2026-02-22
+**Status**: Draft
+**Input**: User description: "Full-Stack architecture. The frontend must use Next.js 16+ App Router and Better Auth for JWT authentication. The backend must use Python FastAPI and SQLModel connected to a Neon Serverless PostgreSQL database. The API must have endpoints for GET, POST, PUT, DELETE, and PATCH at /api/{user_id}/tasks."
+
+## User Scenarios & Testing
+
+### User Story 1 - User Authentication (Priority: P1)
+
+A user wants to securely log in to the application to access their personalized todo list.
+
+**Why this priority**: Essential for personalization and securing user data.
+
+**Independent Test**: Can be fully tested by registering a new user, logging in with valid credentials, and verifying access to protected content, as well as attempting to log in with invalid credentials and verifying error handling.
+
+**Acceptance Scenarios**:
+
+1.  **Given** I am on the login page, **When** I enter valid credentials and submit, **Then** I am successfully authenticated and redirected to my todo list.
+2.  **Given** I am on the login page, **When** I enter invalid credentials and submit, **Then** I receive an error message indicating failed authentication.
+3.  **Given** I am logged in, **When** I navigate to a protected route, **Then** I can access it.
+4.  **Given** I am not logged in, **When** I navigate to a protected route, **Then** I am redirected to the login page.
+5.  **Given** I am logged in, **When** I log out, **Then** my session is terminated, and I am redirected to the login page.
+
+---
+
+### User Story 2 - Add Task (Priority: P1)
+
+A user wants to add a new task to their personalized todo list via the web interface.
+
+**Why this priority**: Core functionality for managing tasks.
+
+**Independent Test**: Can be fully tested by logging in, adding a task through the UI, and verifying its presence in the displayed task list and its persistence after refreshing the page.
+
+**Acceptance Scenarios**:
+
+1.  **Given** I am logged in and viewing my todo list, **When** I enter a task description into the input field and submit, **Then** the new task appears in my list with a "Pending" status.
+2.  **Given** I am logged in and viewing my todo list, **When** I attempt to add a task with an empty description, **Then** an error message is displayed, and no task is added.
+
+---
+
+### User Story 3 - View Task List (Priority: P1)
+
+A user wants to see all tasks currently in their personalized todo list, along with their completion status, via the web interface.
+
+**Why this priority**: Core functionality for users to monitor their tasks.
+
+**Independent Test**: Can be fully tested by logging in, ensuring various tasks (pending and complete) are visible, and verifying that only their tasks are shown.
+
+**Acceptance Scenarios**:
+
+1.  **Given** I am logged in and viewing my todo list, **When** the page loads, **Then** all my tasks are displayed with their unique ID, description, and status.
+2.  **Given** I am logged in and have no tasks, **When** the page loads, **Then** a message indicating an empty list is displayed.
+3.  **Given** User A is logged in, **When** User B has tasks, **Then** User A does not see User B's tasks.
+
+---
+
+### User Story 4 - Mark Task as Complete (Priority: P1)
+
+A user wants to mark an existing task as completed via the web interface.
+
+**Why this priority**: Essential for tracking progress and managing task flow.
+
+**Independent Test**: Can be fully tested by logging in, marking a task as complete through the UI, and verifying its status change is reflected immediately and persists upon refresh.
+
+**Acceptance Scenarios**:
+
+1.  **Given** I am logged in and viewing my todo list with a pending task, **When** I mark that task as complete (e.g., by clicking a checkbox), **Then** the task's status changes to "Complete" and is reflected in the UI.
+2.  **Given** I am logged in, **When** I try to mark a task as complete that does not belong to me, **Then** an error message is displayed, and the task's status remains unchanged.
+
+---
+
+### User Story 5 - Update Task (Priority: P2)
+
+A user wants to change the description of an existing task via the web interface.
+
+**Why this priority**: Important for correcting typos or refining task descriptions.
+
+**Independent Test**: Can be fully tested by logging in, updating a task's description through the UI, and verifying the new description is reflected immediately and persists upon refresh.
+
+**Acceptance Scenarios**:
+
+1.  **Given** I am logged in and viewing my todo list with a task, **When** I update its description through the UI, **Then** the task's description is changed and reflected in the UI.
+2.  **Given** I am logged in, **When** I try to update a task that does not belong to me, **Then** an error message is displayed, and the task's description remains unchanged.
+3.  **Given** I am logged in, **When** I try to update an existing task with an empty description, **Then** an error message is displayed, and the task's description remains unchanged.
+
+---
+
+### User Story 6 - Delete Task (Priority: P2)
+
+A user wants to remove a task from their personalized todo list via the web interface.
+
+**Why this priority**: Allows users to clean up their list of irrelevant or completed tasks.
+
+**Independent Test**: Can be fully tested by logging in, deleting a task through the UI, and verifying it no longer appears in the displayed list and does not reappear upon refresh.
+
+**Acceptance Scenarios**:
+
+1.  **Given** I am logged in and viewing my todo list with a task, **When** I delete that task through the UI, **Then** the task is removed from my list.
+2.  **Given** I am logged in, **When** I try to delete a task that does not belong to me, **Then** an error message is displayed, and the task remains in its list.
+
+## Requirements
+
+### Functional Requirements
+
+-   **FR-001**: The system MUST provide a secure user authentication mechanism using JWT (JSON Web Tokens) via Better Auth for Next.js.
+-   **FR-002**: The system MUST allow authenticated users to register and log in.
+-   **FR-003**: The system MUST allow authenticated users to add a new task with a textual description.
+-   **FR-004**: The system MUST display a list of all current tasks belonging to the authenticated user, including a unique identifier, description, and completion status.
+-   **FR-005**: The system MUST allow authenticated users to change the completion status of their existing tasks (from pending to complete).
+-   **FR-006**: The system MUST allow authenticated users to update the textual description of their existing tasks.
+-   **FR-007**: The system MUST allow authenticated users to remove their existing tasks from the list.
+-   **FR-008**: Tasks and user data MUST be persisted in a Neon Serverless PostgreSQL database.
+-   **FR-009**: Each task MUST be assigned a unique, database-generated identifier (e.g., UUID).
+-   **FR-010**: Each task MUST have a status, initially "Pending", which can be updated to "Complete".
+-   **FR-011**: Each task MUST be associated with a specific user.
+-   **FR-012**: The system MUST provide clear error messages for invalid inputs (e.g., empty description, non-existent task ID) and unauthorized actions.
+
+### Technical Requirements
+
+-   **TR-001**: Frontend MUST use Next.js 16+ with the App Router.
+-   **TR-002**: Frontend MUST use Better Auth for JWT authentication.
+-   **TR-003**: Backend MUST use Python FastAPI.
+-   **TR-004**: Backend MUST use SQLModel for database interactions.
+-   **TR-005**: Database MUST be Neon Serverless PostgreSQL.
+-   **TR-006**: The API MUST expose the following endpoints for tasks under `/api/{user_id}/tasks`:
+    -   `GET /api/{user_id}/tasks`: Retrieve all tasks for a specific user.
+    -   `GET /api/{user_id}/tasks/{task_id}`: Retrieve a specific task for a user.
+    -   `POST /api/{user_id}/tasks`: Create a new task for a user.
+    -   `PUT /api/{user_id}/tasks/{task_id}`: Fully update a specific task for a user.
+    -   `PATCH /api/{user_id}/tasks/{task_id}`: Partially update a specific task for a user.
+    -   `DELETE /api/{user_id}/tasks/{task_id}`: Delete a specific task for a user.
+-   **TR-007**: All API endpoints related to user tasks MUST require authentication and authorization, ensuring a user can only access/modify their own tasks.
+
+### Key Entities
+
+-   **User**: Represents a registered user of the application.
+    -   `id`: Unique identifier (e.g., UUID from database).
+    -   `email`: User's email address (unique, for login).
+    -   `password_hash`: Hashed password for secure storage.
+    -   `tasks`: Relationship to associated `Task` entities.
+-   **Task**: Represents a single to-do item belonging to a user.
+    -   `id`: Unique identifier (e.g., UUID from database).
+    -   `user_id`: Foreign key linking to the `User` who owns the task.
+    -   `description`: A string detailing the task.
+    -   `status`: A string representing the task's completion status ("Pending", "Complete").
+    -   `created_at`: Timestamp of task creation.
+    -   `updated_at`: Timestamp of last task update.
+
+## Success Criteria
+
+### Measurable Outcomes
+
+-   **SC-001**: Users can successfully register, log in, and perform all CRUD operations on their tasks via the web interface.
+-   **SC-002**: Authentication (login/logout) completes within 1 second for 95% of requests.
+-   **SC-003**: All API endpoints respond within 200ms for 95% of requests under normal load.
+-   **SC-004**: The web application loads and becomes interactive within 3 seconds on a typical broadband connection.
+-   **SC-005**: User data (tasks) is consistently stored and retrieved from the PostgreSQL database, surviving application restarts and deployments.
+-   **SC-006**: Unauthorized attempts to access or modify tasks are rejected with appropriate error responses.
